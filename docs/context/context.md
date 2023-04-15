@@ -8,14 +8,19 @@
 
 LAYOUT_WITH_LEGEND()
 
-Person(pbc, "Personal Banking Customer", "A customer of the bank, with personal bank accounts.")
-System(ibs, "Internet Banking System", "Allows customers to view information about their bank accounts, and make payments.")
-System_Ext(es, "E-mail system", "The internal Microsoft Exchange e-mail system.")
-System_Ext(mbs, "Mainframe Banking System", "Stores all of the core banking information about customers, accounts, transactions, etc.")
+Person(user_web, "Пользователь", "")
+Person(user_mobile, "Пользователь", "")
 
-Rel(pbc, ibs, "Uses")
-Rel(es, pbc, "Sends e-mails to")
-Rel(ibs, es, "Sends e-mails", "SMTP")
-Rel(ibs, mbs, "Uses")
+System(web, "Web", "")
+System(mobile, "Mobile App", "")
+
+System(helloconf, "Helloconf API", "")
+
+Rel(user_web, web, "Использует")
+Rel(user_mobile, mobile, "Использует")
+
+Rel(mobile, helloconf, "API")
+Rel(web, helloconf, "API")
+
 @enduml
 ```
