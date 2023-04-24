@@ -14,7 +14,7 @@ Person(user_mobile, "Пользователь", "")
 System(web, "Web", "")
 System(mobile, "Mobile App", "")
 
-System(helloconf, "Helloconf API", "")
+System(helloconf, "Helloconf", "")
 
 Rel(user_web, web, "Использует")
 Rel(user_mobile, mobile, "Использует")
