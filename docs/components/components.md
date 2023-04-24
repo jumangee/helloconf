@@ -12,39 +12,44 @@
 AddElementTag("microService", $shape=EightSidedShape(), $bgColor="CornflowerBlue", $fontColor="white", $legendText="microservice")
 AddElementTag("storage", $shape=RoundedBoxShape(), $bgColor="lightSkyBlue", $fontColor="white")
 
-Person(customer, "Покупатель", "B2C клиент")
+Person(user_web, "Пользователь", "")
+Person(user_android, "Пользователь", "")
+Person(user_ios, "Пользователь", "")
 
-System_Boundary(c, "MTS Shop Lite") {
-   Container(app, "Клиентское веб-приложение", "html, JavaScript, Angular", "Портал интернет-магазина")
-   Container(offering_service, "Product Offering Service", "Java, Spring Boot", "Сервис управления продуктовым предложением", $tags = "microService")      
-   ContainerDb(offering_db, "Product Catalog", "PostgreSQL", "Хранение продуктовых предложений", $tags = "storage")
+
+System(web, "Web", "html, JavaScript, Angular", "Портал конференций")
+System(mobileios, "Mobile App\nAndroid", "")
+System(mobileandroid, "Mobile App\niOS", "")
+
+'Lay_D(user_web, web)
+'Lay_D(user_ios, mobileios)
+'Lay_D(user_android, mobileandroid)
+
+Rel(user_web, web, "Использует")
+Rel(user_ios, mobileios, "Использует")
+Rel(user_android, mobileandroid, "Использует")
+
+System_Boundary(c, "helloconf") {
+   Container(conference_service, "Conference API", "Java, Spring Boot", "Сервис реализующий API работы с конференциями", $tags = "microService")      
+   ContainerDb(conference_db, "Conference DB", "PostgreSQL", "Хранение информации о конференциях", $tags = "storage")
    
-   Container(ordering_service, "Product Ordering Service", "Golang, nginx", "Сервис управления заказом", $tags = "microService")      
-   ContainerDb(ordering_db, "Order Inventory", "MySQL", "Хранение заказов", $tags = "storage")
+   ContainerDb(storage, "Media Storage", "S3", "Файловое хранилище медиа данных")      
     
-   Container(message_bus, "Message Bus", "RabbitMQ", "Транспорт для бизнес-событий")
-   Container(audit_service, "Audit Service", "C#/.NET", "Сервис аудита", $tags = "microService")      
-   Container(audit_store, "Audit Store", "Event Store", "Хранение произошедших события для аудита", $tags = "storage")
+   Container(sso, "SSO", "Java, Spring Boot", "Сервис авторизации и регистрации пользователей", $tags = "microService")      
+   ContainerDb(sso_db, "SSO DB", "PostgreSQL", "Хранение информации о пользователях", $tags = "storage")
 }
 
-System_Ext(logistics_system, "msLogistix", "Система управления доставкой товаров.")  
+Rel_D(web, sso, "API","HTTPS")
+Rel(mobileios, sso, "API","HTTPS")
+Rel(mobileandroid, sso, "API","HTTPS")
 
-Lay_R(offering_service, ordering_service)
-Lay_R(offering_service, logistics_system)
-Lay_D(offering_service, audit_service)
 
-Rel(customer, app, "Оформление заказа", "HTTPS")
-Rel(app, offering_service, "Выбор продуктов для корзины(Продукт):корзина", "JSON, HTTPS")
+Rel_D(sso, sso_db, "Данные пользователя", "SQL")
+Rel_D(conference_service, conference_db, "Данные о конференциях", "SQL")
+Rel_D(conference_service, storage, "Файловое хранилище медиаданных", "S3")
 
-Rel(offering_service, message_bus, "Отправка заказа(Корзина)", "AMPQ")
-Rel(offering_service, offering_db, "Сохранение продуктового предложения(Продуктовая спецификация)", "JDBC, SQL")
+Rel_D(sso, conference_service, "Аутентифицирует", "HTTP")
 
-Rel(ordering_service, message_bus, "Получение заказа: Корзина", "AMPQ")
-Rel_U(audit_service, message_bus, "Получение события аудита(Событие)", "AMPQ")
-
-Rel(ordering_service, ordering_db, "Сохранение заказа(Заказ)", "SQL")
-Rel(audit_service, audit_store, "Сохранение события(Событие)")
-Rel(ordering_service, logistics_system, "Доставка(Наряд на доставку):Трекинг", "JSON, HTTP")  
 
 SHOW_LEGEND()
 @enduml
@@ -53,4 +58,6 @@ SHOW_LEGEND()
 ## Список компонентов
 | Компонент             | Роль/назначение                  |
 |:----------------------|:---------------------------------|
-| *Название компонента* | *Описание назначения компонента* |
+| SSO | Авторизация и регистрация пользователей, аутентификация запросов к API |
+| Conference API | Сервис реализующий API работы с конференциями |
+| Media Storage | Файловое хранилище медиаданных (записи видео/аудио, дополнительные материалы к встречам) |
