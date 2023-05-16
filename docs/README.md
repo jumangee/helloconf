@@ -263,6 +263,7 @@ user -up-> (Настройки профиля)
 -->
 - [ADR.001 Выбор категории системы](adr/adr-001.md)
 - [ADR.002 Выбор способа интеграции](adr/adr-002.md) 
+- [ADR.003 Переход с PostgreSQL на MongoDB](adr/adr-003.md) 
 - [ADR.NNN Суть решения](adr/adr-template.md)
 
 ### [Контекст решения](context/context.md)
